@@ -4,17 +4,19 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 import figure.Circle;
+import matrix.Matrix;
 import number.Complex;
 
 public class ComplexProbability {
 	private Complex origin;
 	private Complex a0, a1, a2, x, y, z;
-	private Color color = Color.white;
 	private Complex p0, q0, r0;
-	private Circle cP, cQ, cR;
 	private Complex mirrorVecX, mirrorVecY, mirrorVecZ;
+	private Circle cP, cQ, cR;
+	private Color color = Color.white;
 	
 	public ComplexProbability(Complex a1, Complex a2, Complex origin){
 		this.origin = origin;
@@ -36,6 +38,19 @@ public class ComplexProbability {
 		cP = new Circle(p0, mirrorVecX.abs());
 		cQ = new Circle(q0, mirrorVecY.abs());
 		cR = new Circle(r0, mirrorVecZ.abs());
+	}
+	
+	public Matrix[] getGens(){
+		Matrix[] gens = new Matrix[3];
+		gens[0] = calcGen(p0, x);
+		gens[1] = calcGen(q0, y);
+		gens[2] = calcGen(r0, z);
+		return gens;
+	}
+	
+	private Matrix calcGen(Complex p, Complex x){
+		return new Matrix(x.mult(p), x.mult(p.mult(p)).mult(-1).sub(Complex.ONE.div(x)),
+						  x, x.mult(p).mult(-1));
 	}
 	
 	public void draw(Graphics2D g2, double magnification, int width, int height){
@@ -127,5 +142,5 @@ public class ComplexProbability {
 	public void setColor(Color color){
 		this.color = color;
 	}
-
+	
 }
