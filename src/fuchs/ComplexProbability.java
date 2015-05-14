@@ -74,7 +74,15 @@ public class ComplexProbability {
 		drawCircles(g2, magnification, width, height);
 		drawPath(g2, magnification, width, height);
 		drawVectors(g2, magnification, width, height);
-		
+	}
+	
+	public void drawControlPoints(Graphics2D g2, double magnification, int width, int height){
+		AffineTransform af = AffineTransform.getTranslateInstance(width/2 , height/2);
+		g2.setTransform(af);
+		g2.setColor(Color.ORANGE);
+		cQ.drawCenter(g2, magnification);
+		cR.drawCenter(g2, magnification);
+		g2.setTransform(new AffineTransform());
 	}
 	
 	public void drawCircles(Graphics2D g2, double magnification, int width, int height){
