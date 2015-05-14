@@ -9,7 +9,7 @@ import number.Complex;
 public class Circle {
 	private Complex center;
 	private double r;
-	private static final int CENTER_POINT_R = 5;
+	public static final int CENTER_POINT_R = 5;
 	
 	public Circle(Complex center, double r){
 		this.center = center;
