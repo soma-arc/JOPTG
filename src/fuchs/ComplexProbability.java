@@ -23,6 +23,23 @@ public class ComplexProbability {
 		this.a1 = a1;
 		this.a2 = a2;
 		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	public void moveQ(Complex Q){
+		this.a1 = Q.sub(origin);
+		this.a2 = r0.sub(Q);
+		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	public void moveR(Complex R){
+		this.a2 = R.sub(origin).sub(a1);
+		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	private void setData(){
 		x = Complex.sqrt(Complex.ONE.div(a1.mult(a2)));
 		y = Complex.sqrt(Complex.ONE.div(a0.mult(a2)));
 		z = Complex.sqrt(Complex.ONE.div(a0.mult(a1)));
