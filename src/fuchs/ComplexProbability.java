@@ -23,6 +23,23 @@ public class ComplexProbability {
 		this.a1 = a1;
 		this.a2 = a2;
 		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	public void moveQ(Complex Q){
+		this.a1 = Q.sub(origin);
+		this.a2 = r0.sub(Q);
+		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	public void moveR(Complex R){
+		this.a2 = R.sub(origin).sub(a1);
+		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	private void setData(){
 		x = Complex.sqrt(Complex.ONE.div(a1.mult(a2)));
 		y = Complex.sqrt(Complex.ONE.div(a0.mult(a2)));
 		z = Complex.sqrt(Complex.ONE.div(a0.mult(a1)));
@@ -57,7 +74,15 @@ public class ComplexProbability {
 		drawCircles(g2, magnification, width, height);
 		drawPath(g2, magnification, width, height);
 		drawVectors(g2, magnification, width, height);
-		
+	}
+	
+	public void drawControlPoints(Graphics2D g2, double magnification, int width, int height){
+		AffineTransform af = AffineTransform.getTranslateInstance(width/2 , height/2);
+		g2.setTransform(af);
+		g2.setColor(Color.ORANGE);
+		cQ.drawCenter(g2, magnification);
+		cR.drawCenter(g2, magnification);
+		g2.setTransform(new AffineTransform());
 	}
 	
 	public void drawCircles(Graphics2D g2, double magnification, int width, int height){
@@ -141,6 +166,20 @@ public class ComplexProbability {
 	
 	public void setColor(Color color){
 		this.color = color;
+	}
+	
+	public boolean isClickedQ(double mouseX, double mouseY, double magnification){
+		if(q0.mult(magnification).dist(new Complex(mouseX, mouseY)) < Circle.CENTER_POINT_R){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isClickedR(double mouseX, double mouseY, double magnification){
+		if(r0.mult(magnification).dist(new Complex(mouseX, mouseY)) < Circle.CENTER_POINT_R){
+			return true;
+		}
+		return false;
 	}
 	
 }
