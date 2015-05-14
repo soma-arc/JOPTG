@@ -168,4 +168,18 @@ public class ComplexProbability {
 		this.color = color;
 	}
 	
+	public boolean isClickedQ(double mouseX, double mouseY, double magnification){
+		if(q0.mult(magnification).dist(new Complex(mouseX, mouseY)) < Circle.CENTER_POINT_R){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isClickedR(double mouseX, double mouseY, double magnification){
+		if(r0.mult(magnification).dist(new Complex(mouseX, mouseY)) < Circle.CENTER_POINT_R){
+			return true;
+		}
+		return false;
+	}
+	
 }
