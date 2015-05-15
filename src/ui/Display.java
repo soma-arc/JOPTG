@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import dfs.DFSOperator;
 import number.Complex;
 import fuchs.ComplexProbability;
 
@@ -20,8 +21,11 @@ public class Display extends JPanel{
 	private double magnification = 500;
 	private boolean isDraggingQ = false;
 	private boolean isDraggingR = false;
-	//private Complex draggingPoint = null;
 
+	
+	private int maxLevel = 15;
+	private double epsilon = 0.002;
+	private ArrayList<Complex> points = new ArrayList<>();
 	public Display(){
 		Complex a1 = new Complex(0.3, 0.4);
 		Complex a2 = new Complex(0.3, 0.1);
@@ -29,7 +33,10 @@ public class Display extends JPanel{
 		cp.setColor(Color.red);
 		cp2 = cp.replace(1);
 		cp2.setColor(Color.green);
-
+		
+		DFSOperator dfs = new DFSOperator(cp.getGens());
+		points = dfs.run(maxLevel, epsilon);
+		
 		addMouseListener(new MousePressedAdapter());
 		addMouseMotionListener(new MouseDraggedAdapter());
 	}
@@ -42,6 +49,13 @@ public class Display extends JPanel{
 		drawAxis(g2);
 		cp.draw(g2, magnification, getWidth(), getHeight());
 		cp.drawControlPoints(g2, magnification, getWidth(), getHeight());
+		
+		g2.translate(getWidth() / 2, getHeight() / 2 );
+//		System.out.println(points.size());
+		for(int i = 0 ; i < points.size()-1 ; i++){
+			Complex point = points.get(i);
+			g2.fillRect((int) (point.re() * magnification), (int) (point.im() * magnification), 2, 2);
+		}
 	}
 
 	private void drawAxis(Graphics2D g2){
@@ -80,6 +94,8 @@ public class Display extends JPanel{
 			}else if(isDraggingR){
 				cp.moveR(np);
 			}
+			DFSOperator dfs = new DFSOperator(cp.getGens());
+			points = dfs.run(maxLevel, epsilon);
 			repaint();
 		}
 	}
