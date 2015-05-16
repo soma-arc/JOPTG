@@ -12,6 +12,11 @@ public class Mobius {
 		Complex num =  t.a.sub(t.d).add( Complex.sqrt(t.trace().mult(t.trace()).sub(4.0f)));
 		return num.div(t.c.mult(2.0f));
 	}
+	
+	public static Complex getMinusFixPoint(Matrix t){
+		Complex num =  t.a.sub(t.d).sub( Complex.sqrt(t.trace().mult(t.trace()).sub(4.0f)));
+		return num.div(t.c.mult(2.0f));
+	}
 
 	public static Complex mobiusOnPoint(Matrix t, Complex z){
 		if(z.isInfinity()){

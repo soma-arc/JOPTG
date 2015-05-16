@@ -40,9 +40,9 @@ public class ComplexProbability {
 	}
 	
 	private void setData(){
-		x = Complex.sqrt(Complex.ONE.div(a1.mult(a2)));
-		y = Complex.sqrt(Complex.ONE.div(a0.mult(a2)));
-		z = Complex.sqrt(Complex.ONE.div(a0.mult(a1)));
+		x = Complex.sqrt(Complex.ONE.div(a0.mult(a1)));
+		y = Complex.sqrt(Complex.ONE.div(a1.mult(a2)));
+		z = Complex.sqrt(Complex.ONE.div(a2.mult(a0)));
 		
 		mirrorVecX = Complex.I.div(x);
 		mirrorVecY = Complex.I.div(y);
