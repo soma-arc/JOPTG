@@ -16,10 +16,9 @@ public class DFSOperator {
 	
 	public DFSOperator(Matrix[] gens){
 		this.gens = new Matrix[gens.length];
-		fixPoints = new Complex[gens.length * 2];
+		fixPoints = new Complex[gens.length];
 		for(int i = 0 ; i < gens.length ; i++){
 			this.gens[i] = gens[i];
-			fixPoints[i] = Mobius.getPlusFixPoint(gens[(i + 1)%3].mult(gens[(i + 2)%3]).mult(gens[(i + 3)%3]));
 		}
 	}
 
@@ -58,7 +57,7 @@ public class DFSOperator {
 	}
 
 	private boolean isAvailableTurn(){
-		if(tags[level + 1] == 2 || 
+		if(tags[level + 1] >= 2 || 
 		   (tags[level] == 2 && tags[level + 1] == 1)){
 			return false;
 		}
@@ -80,10 +79,11 @@ public class DFSOperator {
 	}
 
 	private boolean branchTermination(int maxLevel, double epsilon){
-		if(level == maxLevel ){
-			pointsList.add(Mobius.mobiusOnPoint(words[level], fixPoints[(tags[level])]));
+		if(level == maxLevel){
+			pointsList.add(Mobius.mobiusOnPoint(words[level], Complex.INFINITY));
 			return true;
 		}
+		
 		return false;
 	}
 }
