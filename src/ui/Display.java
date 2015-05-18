@@ -23,12 +23,12 @@ public class Display extends JPanel{
 	private boolean isDraggingR = false;
 
 	
-	private int maxLevel = 15;
+	private int maxLevel = 20;
 	private double epsilon = 0.002;
 	private ArrayList<Complex> points = new ArrayList<>();
 	public Display(){
-		Complex a1 = new Complex(0.3, 0.4);
-		Complex a2 = new Complex(0.3, 0.1);
+		Complex a1 = new Complex(0.25, 0);
+		Complex a2 = new Complex(0.25, 0);
 		cp = new ComplexProbability(a1, a2, Complex.ZERO);
 		cp.setColor(Color.red);
 		cp2 = cp.replace(1);
@@ -52,8 +52,9 @@ public class Display extends JPanel{
 		
 		g2.translate(getWidth() / 2, getHeight() / 2 );
 //		System.out.println(points.size());
-		for(int i = 0 ; i < points.size()-1 ; i++){
+		for(int i = 0 ; i < points.size(); i++){
 			Complex point = points.get(i);
+//			System.out.println(point);
 			g2.fillRect((int) (point.re() * magnification), (int) (point.im() * magnification), 2, 2);
 		}
 	}
