@@ -80,7 +80,12 @@ public class DFSOperator {
 
 	private boolean branchTermination(int maxLevel, double epsilon){
 		if(level == maxLevel){
+			if((tags[1] == 2 && tags[2] == 1 && tags[3] == 0) ||
+			   tags[1] == 0){
+				return true;
+			}
 			pointsList.add(Mobius.mobiusOnPoint(words[level], Complex.INFINITY));
+			
 			return true;
 		}
 		
