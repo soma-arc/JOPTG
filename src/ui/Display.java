@@ -7,6 +7,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -23,8 +24,8 @@ public class Display extends JPanel{
 	private boolean isDraggingR = false;
 
 	
-	private int maxLevel = 20;
-	private double epsilon = 0.002;
+	private int maxLevel = 30;
+	private double epsilon = 0.0019;
 	private ArrayList<Complex> points = new ArrayList<>();
 	public Display(){
 		Complex a1 = new Complex(0.25, 0);
@@ -50,12 +51,12 @@ public class Display extends JPanel{
 		cp.draw(g2, magnification, getWidth(), getHeight());
 		cp.drawControlPoints(g2, magnification, getWidth(), getHeight());
 		
-		g2.translate(getWidth() / 2, getHeight() / 2 );
-//		System.out.println(points.size());
-		for(int i = 0 ; i < points.size(); i++){
+		AffineTransform originAf = AffineTransform.getTranslateInstance(getWidth() / 2, getHeight() / 2);
+		g2.setTransform(originAf);
+		for(int i = 0 ; i < points.size()-1; i++){
 			Complex point = points.get(i);
-//			System.out.println(point);
-			g2.fillRect((int) (point.re() * magnification), (int) (point.im() * magnification), 2, 2);
+			Complex point2 = points.get(i+1);
+			g2.drawLine((int) (point.re() * magnification), (int) (point.im() * magnification), (int) (point2.re() * magnification), (int) (point2.im() * magnification));
 		}
 	}
 
