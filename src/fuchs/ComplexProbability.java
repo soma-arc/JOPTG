@@ -17,6 +17,9 @@ public class ComplexProbability {
 	private Complex mirrorVecX, mirrorVecY, mirrorVecZ;
 	private Circle cP, cQ, cR;
 	private Color color = Color.white;
+	//‰~PQR‚ÌŒð“_
+	private Complex aboveIntersectPQ, aboveIntersectQR;
+	private Complex bottomIntersectPQ, bottomIntersectQR;
 	
 	public ComplexProbability(Complex a1, Complex a2, Complex origin){
 		this.origin = origin;
@@ -55,6 +58,23 @@ public class ComplexProbability {
 		cP = new Circle(p0, mirrorVecX.abs());
 		cQ = new Circle(q0, mirrorVecY.abs());
 		cR = new Circle(r0, mirrorVecZ.abs());
+		
+		Complex[] intersectPQ = Circle.getIntersections(cP, cQ);
+		Complex[] intersectQR = Circle.getIntersections(cQ, cR);
+		if(intersectPQ[0].im() > intersectPQ[1].im()){
+			aboveIntersectPQ = intersectPQ[0];
+			bottomIntersectPQ = intersectPQ[1];
+		}else{
+			aboveIntersectPQ = intersectPQ[1];
+			bottomIntersectPQ = intersectPQ[0];
+		}
+		if(intersectQR[0].im() > intersectQR[1].im()){
+			aboveIntersectQR = intersectQR[0];
+			bottomIntersectQR = intersectQR[1];
+		}else{
+			aboveIntersectQR = intersectQR[1];
+			bottomIntersectQR = intersectQR[0];
+		}
 	}
 	
 	public Matrix[] getGens(){
@@ -84,7 +104,7 @@ public class ComplexProbability {
 		cR.drawCenter(g2, magnification);
 		g2.setTransform(new AffineTransform());
 	}
-	
+
 	public void drawCircles(Graphics2D g2, double magnification, int width, int height){
 		g2.setColor(color);
 		int n = (int)(width / 2 / (1 * magnification)) + 2; 
