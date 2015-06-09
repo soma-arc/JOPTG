@@ -18,7 +18,9 @@ public class Main {
 		JFrame frame = new JFrame();
 		frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(new Display());
+		Display display = new Display();
+		frame.add(display);
 		frame.setVisible(true);
+		display.requestFocus();
 	}
 }

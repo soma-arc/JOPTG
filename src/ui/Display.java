@@ -1,13 +1,18 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -23,10 +28,18 @@ public class Display extends JPanel{
 	private boolean isDraggingQ = false;
 	private boolean isDraggingR = false;
 
-	
 	private int maxLevel = 30;
 	private double epsilon = 0.0019;
+	private static final double EPSILON_STEP = 0.0001;
 	private ArrayList<Complex> points = new ArrayList<>();
+	private DFSOperator dfs;
+	
+	private static final int FONT_SIZE = 30;
+	private static final int STATUS_POS_X = 10;
+	private static final int MAX_LEVEL_POS_Y = 30;
+	private static final int EPSILON_POS_Y = 60;
+	private DecimalFormat epsilonFormatter = new DecimalFormat("0.00000");
+	
 	public Display(){
 		Complex a1 = new Complex(0.25, 0);
 		Complex a2 = new Complex(0.25, 0);
@@ -35,11 +48,12 @@ public class Display extends JPanel{
 		cp2 = cp.replace(1);
 		cp2.setColor(Color.green);
 		
-		DFSOperator dfs = new DFSOperator(cp.getGens());
+		dfs = new DFSOperator(cp.getGens());
 		points = dfs.run(maxLevel, epsilon);
 		
 		addMouseListener(new MousePressedAdapter());
 		addMouseMotionListener(new MouseDraggedAdapter());
+		addKeyListener(new KeyPressedAdapter());
 	}
 
 	public void paintComponent(Graphics g){
@@ -48,6 +62,8 @@ public class Display extends JPanel{
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		drawAxis(g2);
+		drawCurrentStatus(g2);
+		
 		cp.draw(g2, magnification, getWidth(), getHeight());
 		cp.drawControlPoints(g2, magnification, getWidth(), getHeight());
 		
@@ -58,6 +74,13 @@ public class Display extends JPanel{
 			Complex point2 = points.get(i+1);
 			g2.drawLine((int) (point.re() * magnification), (int) (point.im() * magnification), (int) (point2.re() * magnification), (int) (point2.im() * magnification));
 		}
+	}
+	
+	private void drawCurrentStatus(Graphics2D g2){
+		g2.setFont(new Font("Times New Roman", Font.BOLD, FONT_SIZE));
+		g2.setColor(Color.white);
+		g2.drawString("max level "+ maxLevel, STATUS_POS_X, MAX_LEVEL_POS_Y);
+		g2.drawString("epsilon "+ epsilonFormatter.format(epsilon), STATUS_POS_X, EPSILON_POS_Y);
 	}
 
 	private void drawAxis(Graphics2D g2){
@@ -87,6 +110,7 @@ public class Display extends JPanel{
 	}
 	
 	private class MouseDraggedAdapter extends MouseMotionAdapter{
+		@Override
 		public void mouseDragged(MouseEvent e){
 			double mouseX = e.getX() - getWidth() / 2;
 			double mouseY = e.getY() - getHeight() / 2;
@@ -96,8 +120,31 @@ public class Display extends JPanel{
 			}else if(isDraggingR){
 				cp.moveR(np);
 			}
-			DFSOperator dfs = new DFSOperator(cp.getGens());
+			dfs = new DFSOperator(cp.getGens());
 			points = dfs.run(maxLevel, epsilon);
+			repaint();
+		}
+	}
+	
+	private class KeyPressedAdapter extends KeyAdapter{
+		@Override
+		public void keyPressed(KeyEvent e){
+			char keyChar = e.getKeyChar();
+			if(e.getKeyChar() == '+'){
+				maxLevel++;
+				points = dfs.run(maxLevel, epsilon);
+			}else if(keyChar == '-'){
+				if(maxLevel != 1){
+					maxLevel--;
+					points = dfs.run(maxLevel, epsilon);
+				}
+			}else if(keyChar == 'p'){
+				epsilon += EPSILON_STEP;
+				points = dfs.run(maxLevel, epsilon);
+			}else if(keyChar == 'n'){
+				epsilon -= EPSILON_STEP;
+				points = dfs.run(maxLevel, epsilon);
+			}
 			repaint();
 		}
 	}
