@@ -96,6 +96,31 @@ public class ComplexProbability {
 		drawVectors(g2, magnification, width, height);
 	}
 	
+	public void drawTriangles(Graphics2D g2, double magnification, int width, int height){
+		AffineTransform af = AffineTransform.getTranslateInstance(width/2 , height/2);
+		g2.setTransform(af);
+		g2.setColor(Color.white);
+		g2.drawLine((int)(p0.re() * magnification), (int)(p0.im() * magnification),
+					(int)(aboveIntersectPQ.re() * magnification), (int) (aboveIntersectPQ.im() * magnification));
+		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
+				(int)(aboveIntersectPQ.re() * magnification), (int) (aboveIntersectPQ.im() * magnification));
+		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
+				(int)(aboveIntersectQR.re() * magnification), (int) (aboveIntersectQR.im() * magnification));
+		g2.drawLine((int)(r0.re() * magnification), (int)(r0.im() * magnification),
+				(int)(aboveIntersectQR.re() * magnification), (int) (aboveIntersectQR.im() * magnification));
+		
+		g2.drawLine((int)(p0.re() * magnification), (int)(p0.im() * magnification),
+				(int)(bottomIntersectPQ.re() * magnification), (int) (bottomIntersectPQ.im() * magnification));
+		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
+				(int)(bottomIntersectPQ.re() * magnification), (int) (bottomIntersectPQ.im() * magnification));
+		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
+				(int)(bottomIntersectQR.re() * magnification), (int) (bottomIntersectQR.im() * magnification));
+		g2.drawLine((int)(r0.re() * magnification), (int)(r0.im() * magnification),
+				(int)(bottomIntersectQR.re() * magnification), (int) (bottomIntersectQR.im() * magnification));
+		
+		g2.setTransform(new AffineTransform());
+	}
+	
 	public void drawControlPoints(Graphics2D g2, double magnification, int width, int height){
 		AffineTransform af = AffineTransform.getTranslateInstance(width/2 , height/2);
 		g2.setTransform(af);
@@ -202,4 +227,12 @@ public class ComplexProbability {
 		return false;
 	}
 	
+	
+	public boolean isIntersectAboveTriangle(){
+		return aboveIntersectPQ.sub(q0).div(aboveIntersectQR.sub(q0)).im() < 0;
+	}
+	
+	public boolean isIntersectBottomTriangle(){
+		return bottomIntersectPQ.sub(q0).div(bottomIntersectQR.sub(q0)).im() > 0;
+	}
 }
