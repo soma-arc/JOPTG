@@ -15,11 +15,11 @@ public class ComplexProbability {
 	private Complex a0, a1, a2, x, y, z;
 	private Complex p0, q0, r0;
 	private Complex mirrorVecX, mirrorVecY, mirrorVecZ;
-	private Circle cP, cQ, cR;
+	private Circle cP0, cQ0, cR0;
 	private Color color = Color.white;
 	//‰~PQR‚ÌŒð“_
-	private Complex aboveIntersectPQ, aboveIntersectQR;
-	private Complex bottomIntersectPQ, bottomIntersectQR;
+	private Complex aboveIntersectPQ, aboveIntersectQR, aboveIntersectRP1, aboveIntersectR1P;
+	private Complex bottomIntersectPQ, bottomIntersectQR, bottomIntersectRP1, bottomIntersectR1P;
 	
 	public ComplexProbability(Complex a1, Complex a2, Complex origin){
 		this.origin = origin;
@@ -55,12 +55,13 @@ public class ComplexProbability {
 		q0 = p0.add(a1);
 		r0 = q0.add(a2);
 		
-		cP = new Circle(p0, mirrorVecX.abs());
-		cQ = new Circle(q0, mirrorVecY.abs());
-		cR = new Circle(r0, mirrorVecZ.abs());
+		cP0 = new Circle(p0, mirrorVecX.abs());
+		cQ0 = new Circle(q0, mirrorVecY.abs());
+		cR0 = new Circle(r0, mirrorVecZ.abs());
 		
-		Complex[] intersectPQ = Circle.getIntersections(cP, cQ);
-		Complex[] intersectQR = Circle.getIntersections(cQ, cR);
+		Complex[] intersectPQ = Circle.getIntersections(cP0, cQ0);
+		Complex[] intersectQR = Circle.getIntersections(cQ0, cR0);
+		Complex[] intersectRP1 = Circle.getIntersections(cR0, new Circle(cP0.getCenter().add(Complex.ONE), cP0.getR()));
 		if(intersectPQ[0].im() > intersectPQ[1].im()){
 			aboveIntersectPQ = intersectPQ[0];
 			bottomIntersectPQ = intersectPQ[1];
@@ -75,6 +76,16 @@ public class ComplexProbability {
 			aboveIntersectQR = intersectQR[1];
 			bottomIntersectQR = intersectQR[0];
 		}
+		if(intersectRP1[0].im() > intersectRP1[1].im()){
+			aboveIntersectRP1 = intersectRP1[0];
+			bottomIntersectRP1 = intersectRP1[1];
+		}else{
+			aboveIntersectRP1 = intersectRP1[1];
+			bottomIntersectRP1 = intersectRP1[0];
+		}
+		
+		aboveIntersectR1P = aboveIntersectRP1.sub(Complex.ONE);
+		bottomIntersectR1P = bottomIntersectRP1.sub(Complex.ONE);
 	}
 	
 	public Matrix[] getGens(){
@@ -100,33 +111,34 @@ public class ComplexProbability {
 		AffineTransform af = AffineTransform.getTranslateInstance(width/2 , height/2);
 		g2.setTransform(af);
 		g2.setColor(Color.white);
-		g2.drawLine((int)(p0.re() * magnification), (int)(p0.im() * magnification),
-					(int)(aboveIntersectPQ.re() * magnification), (int) (aboveIntersectPQ.im() * magnification));
-		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
-				(int)(aboveIntersectPQ.re() * magnification), (int) (aboveIntersectPQ.im() * magnification));
-		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
-				(int)(aboveIntersectQR.re() * magnification), (int) (aboveIntersectQR.im() * magnification));
-		g2.drawLine((int)(r0.re() * magnification), (int)(r0.im() * magnification),
-				(int)(aboveIntersectQR.re() * magnification), (int) (aboveIntersectQR.im() * magnification));
+		drawTriangle(g2, magnification, p0, aboveIntersectPQ, q0);
+		drawTriangle(g2, magnification, p0, bottomIntersectPQ, q0);
+
+		drawTriangle(g2, magnification, q0, aboveIntersectQR, r0);
+		drawTriangle(g2, magnification, q0, bottomIntersectQR, r0);
 		
-		g2.drawLine((int)(p0.re() * magnification), (int)(p0.im() * magnification),
-				(int)(bottomIntersectPQ.re() * magnification), (int) (bottomIntersectPQ.im() * magnification));
-		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
-				(int)(bottomIntersectPQ.re() * magnification), (int) (bottomIntersectPQ.im() * magnification));
-		g2.drawLine((int)(q0.re() * magnification), (int)(q0.im() * magnification),
-				(int)(bottomIntersectQR.re() * magnification), (int) (bottomIntersectQR.im() * magnification));
-		g2.drawLine((int)(r0.re() * magnification), (int)(r0.im() * magnification),
-				(int)(bottomIntersectQR.re() * magnification), (int) (bottomIntersectQR.im() * magnification));
+		drawTriangle(g2, magnification, r0, aboveIntersectRP1, p0.add(Complex.ONE));
+		drawTriangle(g2, magnification, r0, bottomIntersectRP1, p0.add(Complex.ONE));
+		
+		drawTriangle(g2, magnification, r0.sub(Complex.ONE), aboveIntersectR1P, p0);
+		drawTriangle(g2, magnification, r0.sub(Complex.ONE), bottomIntersectR1P, p0);
 		
 		g2.setTransform(new AffineTransform());
+	}
+	
+	public void drawTriangle(Graphics2D g2, double magnification, Complex p1, Complex p2, Complex p3){
+		g2.drawLine((int)(p1.re() * magnification), (int)(p1.im() * magnification),
+					(int)(p2.re() * magnification), (int) (p2.im() * magnification));
+		g2.drawLine((int)(p2.re() * magnification), (int)(p2.im() * magnification),
+					(int)(p3.re() * magnification), (int) (p3.im() * magnification));
 	}
 	
 	public void drawControlPoints(Graphics2D g2, double magnification, int width, int height){
 		AffineTransform af = AffineTransform.getTranslateInstance(width/2 , height/2);
 		g2.setTransform(af);
 		g2.setColor(Color.ORANGE);
-		cQ.drawCenter(g2, magnification);
-		cR.drawCenter(g2, magnification);
+		cQ0.drawCenter(g2, magnification);
+		cR0.drawCenter(g2, magnification);
 		g2.setTransform(new AffineTransform());
 	}
 
@@ -136,9 +148,9 @@ public class ComplexProbability {
 		for(int i = -n ; i <= n ; i++){
 			AffineTransform af = AffineTransform.getTranslateInstance(width/2 + i * magnification , height/2);
 			g2.setTransform(af);
-			cP.draw(g2, magnification);
-			cQ.draw(g2, magnification);
-			cR.draw(g2, magnification);
+			cP0.draw(g2, magnification);
+			cQ0.draw(g2, magnification);
+			cR0.draw(g2, magnification);
 			g2.setTransform(new AffineTransform());
 		}
 	}
