@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import dfs.DFSOperator;
+import discriminator.DiscretenessDiscriminator;
 import number.Complex;
 import fuchs.ComplexProbability;
 
@@ -38,7 +39,10 @@ public class Display extends JPanel{
 	private static final int STATUS_POS_X = 10;
 	private static final int MAX_LEVEL_POS_Y = 30;
 	private static final int EPSILON_POS_Y = 60;
+	private static final int DISCRETE_POS_Y = 90;
 	private DecimalFormat epsilonFormatter = new DecimalFormat("0.00000");
+	
+	private DiscretenessDiscriminator discriminator;
 	
 	public Display(){
 		Complex a1 = new Complex(0.25, 0);
@@ -54,6 +58,8 @@ public class Display extends JPanel{
 		addMouseListener(new MousePressedAdapter());
 		addMouseMotionListener(new MouseDraggedAdapter());
 		addKeyListener(new KeyPressedAdapter());
+		
+		discriminator = new DiscretenessDiscriminator(cp);
 	}
 
 	public void paintComponent(Graphics g){
@@ -64,11 +70,23 @@ public class Display extends JPanel{
 		drawAxis(g2);
 		drawCurrentStatus(g2);
 		
-		cp.draw(g2, magnification, getWidth(), getHeight());
-		cp.drawControlPoints(g2, magnification, getWidth(), getHeight());
+		cp.drawCircles(g2, magnification, getWidth(), getHeight());
 		
 		AffineTransform originAf = AffineTransform.getTranslateInstance(getWidth() / 2, getHeight() / 2);
 		g2.setTransform(originAf);
+		drawLimitSet(g2);
+		cp.drawTriangles(g2, magnification, getWidth(), getHeight());
+
+		for(ComplexProbability cpp : discriminator.getComplexProbabilities()){
+			cpp.setColor(Color.red);
+			cpp.drawCircles(g2, magnification, getWidth(), getHeight());
+		}
+
+		cp.drawControlPoints(g2, magnification, getWidth(), getHeight());
+	}
+	
+	private void drawLimitSet(Graphics2D g2){
+		g2.setColor(Color.ORANGE);
 		for(int i = 0 ; i < points.size()-1; i++){
 			Complex point = points.get(i);
 			Complex point2 = points.get(i+1);
@@ -81,6 +99,7 @@ public class Display extends JPanel{
 		g2.setColor(Color.white);
 		g2.drawString("max level "+ maxLevel, STATUS_POS_X, MAX_LEVEL_POS_Y);
 		g2.drawString("epsilon "+ epsilonFormatter.format(epsilon), STATUS_POS_X, EPSILON_POS_Y);
+		g2.drawString("isDiscrete : "+ discriminator.isDiscrete(), STATUS_POS_X, DISCRETE_POS_Y);
 	}
 
 	private void drawAxis(Graphics2D g2){
@@ -122,6 +141,7 @@ public class Display extends JPanel{
 			}
 			dfs = new DFSOperator(cp.getGens());
 			points = dfs.run(maxLevel, epsilon);
+			discriminator.discriminate();
 			repaint();
 		}
 	}
