@@ -29,14 +29,29 @@ public class ComplexProbability {
 		setData();
 	}
 	
-	public void moveQ(Complex Q){
+	public void setQ(Complex Q){
 		this.a1 = Q.sub(origin);
 		this.a2 = r0.sub(Q);
 		this.a0 = Complex.ONE.sub(a1).sub(a2);
 		setData();
 	}
 	
-	public void moveR(Complex R){
+	public void moveQ(Complex step){
+		Complex Q = q0.add(step);
+		this.a1 = Q.sub(origin);
+		this.a2 = r0.sub(Q);
+		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	public void setR(Complex R){
+		this.a2 = R.sub(origin).sub(a1);
+		this.a0 = Complex.ONE.sub(a1).sub(a2);
+		setData();
+	}
+	
+	public void moveR(Complex step){
+		Complex R = r0.add(step);
 		this.a2 = R.sub(origin).sub(a1);
 		this.a0 = Complex.ONE.sub(a1).sub(a2);
 		setData();

@@ -40,6 +40,7 @@ public class Display extends JPanel{
 	private static final int MAX_LEVEL_POS_Y = 30;
 	private static final int EPSILON_POS_Y = 60;
 	private static final int DISCRETE_POS_Y = 90;
+	private double paramStep = 5.0 / magnification;
 	private DecimalFormat epsilonFormatter = new DecimalFormat("0.00000");
 	
 	private DiscretenessDiscriminator discriminator;
@@ -135,9 +136,9 @@ public class Display extends JPanel{
 			double mouseY = e.getY() - getHeight() / 2;
 			Complex np = new Complex(mouseX/magnification, mouseY / magnification);
 			if(isDraggingQ){
-				cp.moveQ(np);
+				cp.setQ(np);
 			}else if(isDraggingR){
-				cp.moveR(np);
+				cp.setR(np);
 			}
 			dfs = new DFSOperator(cp.getGens());
 			points = dfs.run(maxLevel, epsilon);
@@ -153,18 +154,46 @@ public class Display extends JPanel{
 			if(e.getKeyChar() == '+'){
 				maxLevel++;
 				points = dfs.run(maxLevel, epsilon);
+				repaint();
+				return;
 			}else if(keyChar == '-'){
 				if(maxLevel != 1){
 					maxLevel--;
 					points = dfs.run(maxLevel, epsilon);
 				}
+				repaint();
+				return;
 			}else if(keyChar == 'p'){
 				epsilon += EPSILON_STEP;
 				points = dfs.run(maxLevel, epsilon);
+				repaint();
+				return;
 			}else if(keyChar == 'n'){
 				epsilon -= EPSILON_STEP;
 				points = dfs.run(maxLevel, epsilon);
+				repaint();
+				return;
+			}else if(keyChar == 'w'){
+				cp.moveQ(new Complex(0, -paramStep));
+			}else if(keyChar == 's'){
+				cp.moveQ(new Complex(0, paramStep));
+			}else if(keyChar == 'd'){
+				cp.moveQ(new Complex(paramStep, 0));
+			}else if(keyChar == 'a'){
+				cp.moveQ(new Complex(-paramStep, 0));
+			}else if(keyChar == 'i'){
+				cp.moveR(new Complex(0, -paramStep));
+			}else if(keyChar == 'k'){
+				cp.moveR(new Complex(0, paramStep));
+			}else if(keyChar == 'l'){
+				cp.moveR(new Complex(paramStep, 0));
+			}else if(keyChar == 'j'){
+				cp.moveR(new Complex(-paramStep, 0));
 			}
+			dfs = new DFSOperator(cp.getGens());
+			points = dfs.run(maxLevel, epsilon);
+			discriminator.discriminate();
+			
 			repaint();
 		}
 	}
