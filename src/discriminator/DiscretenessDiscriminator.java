@@ -7,32 +7,46 @@ import fuchs.ComplexProbability;
 
 public class DiscretenessDiscriminator {
 	private ComplexProbability root;
-
+	private int maxLevel = 10;
+	private ArrayList<ComplexProbability> list = new ArrayList<>();
+	private boolean discreteness = true;
+	
 	public DiscretenessDiscriminator(ComplexProbability root){
 		this.root = root;
 	}
 	
-	private int maxLevel = 5;
-	private ArrayList<ComplexProbability> list = new ArrayList<>();
-	public void explore(){
+	public boolean discriminate(){
+		discreteness = true;
 		list.clear();
-		ArrayList<ComplexProbability> rootReplaced = root.replace();
-		list.addAll(rootReplaced);
-		for(ComplexProbability cpp : rootReplaced){
-			replace(cpp, 1);
+		ComplexProbability above = root.replaceAbove();
+		int level = 1;
+		while(above != null){
+			list.add(above);
+			above = above.replaceAbove();
+			level++;
+			if(level > maxLevel){
+				discreteness = false;
+				break;
+			}
 		}
-	}
-	
-	private void replace(ComplexProbability cp, int level){
-		if(level > maxLevel) return;
-		ArrayList<ComplexProbability> replaced = cp.replace();
-		list.addAll(replaced);
-		for(ComplexProbability cpp : replaced){
-			replace(cpp, level + 1);
+		
+		ComplexProbability bottom = root.replaceBottom();
+		while(bottom != null){
+			list.add(bottom);
+			bottom = bottom.replaceBottom();
+			if(level > maxLevel){
+				discreteness = false;
+				break;
+			}
 		}
+		return discreteness;
 	}
 	
 	public ArrayList<ComplexProbability> getComplexProbabilities(){
 		return list;
+	}
+	
+	public boolean isDiscrete(){
+		return discreteness;
 	}
 }
