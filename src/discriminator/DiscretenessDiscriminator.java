@@ -29,16 +29,19 @@ public class DiscretenessDiscriminator {
 				break;
 			}
 		}
-		
+
 		ComplexProbability bottom = root.replaceBottom();
+		level = 1;
 		while(bottom != null){
 			list.add(bottom);
 			bottom = bottom.replaceBottom();
+			level++;
 			if(level > maxLevel){
 				discreteness = false;
 				break;
 			}
 		}
+
 		return discreteness;
 	}
 	
