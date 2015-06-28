@@ -127,24 +127,97 @@ public class ComplexProbability {
 		g2.setTransform(new AffineTransform());
 	}
 	
-	public ArrayList<ComplexProbability> replace(){
-		ArrayList<ComplexProbability> replaced = new ArrayList<>();
-		if(isIntersectAboveTriangle(aboveIntersectP0Q0, q0, aboveIntersectQ0R0)||
-		   isIntersectBottomTriangle(bottomIntersectP0Q0, q0, bottomIntersectQ0R0)){
-			replaced.add(replace(1));
+	public ComplexProbability replaceAbove(){
+		boolean aboveR_1P0Q0 = isIntersectAboveTriangle(aboveIntersectR_1P0, p0, aboveIntersectP0Q0);
+		boolean aboveP0Q0R0 = isIntersectAboveTriangle(aboveIntersectP0Q0, q0, aboveIntersectQ0R0);
+		boolean aboveQ0R0P1 = isIntersectAboveTriangle(aboveIntersectQ0R0, r0, aboveIntersectR0P1);
+		
+		if(aboveR_1P0Q0 && aboveP0Q0R0){
+			double tLeft = segmentSection(aboveIntersectP0Q0, bottomIntersectP0Q0, aboveIntersectR_1P0, bottomIntersectR_1P0);
+			double tRight = segmentSection(aboveIntersectP0Q0, bottomIntersectP0Q0, aboveIntersectQ0R0, bottomIntersectQ0R0);
+			if(tLeft > tRight){
+				return replace(0); 
+			}else{
+				return replace(1); 
+			}
+		}else if(aboveP0Q0R0 && aboveQ0R0P1){
+			double tLeft = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectP0Q0, bottomIntersectP0Q0);
+			double tRight = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectR0P1, bottomIntersectR0P1);
+			if(tLeft > tRight){
+				return replace(1); 
+			}else{
+				return replace(2); 
+			}
+		}else if(aboveR_1P0Q0 && aboveQ0R0P1){
+			double tLeft = segmentSection(aboveIntersectP0Q0, bottomIntersectP0Q0, aboveIntersectR_1P0, bottomIntersectR_1P0);
+			double tRight = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectR0P1, bottomIntersectR0P1);
+			if(tLeft > tRight){
+				return replace(0); 
+			}else{
+				return replace(2); 
+			}
+		}else{
+			if(aboveR_1P0Q0){
+				return replace(0);
+			}else if(aboveP0Q0R0){
+				return replace(1);
+			}else if(aboveQ0R0P1){
+				return replace(2);
+			}
 		}
-
-		if(isIntersectAboveTriangle(aboveIntersectQ0R0, r0, aboveIntersectR0P1)||
-		   isIntersectBottomTriangle(bottomIntersectQ0R0, r0, bottomIntersectR0P1)){
-			replaced.add(replace(2));
+		
+		return null;
+	}
+	
+	public ComplexProbability replaceBottom(){
+		boolean bottomR_1P0Q0 = isIntersectBottomTriangle(bottomIntersectR_1P0, p0, bottomIntersectP0Q0);
+		boolean bottomP0Q0R0 = isIntersectBottomTriangle(bottomIntersectP0Q0, q0, bottomIntersectQ0R0);
+		boolean bottomQ0R0P1 = isIntersectBottomTriangle(bottomIntersectQ0R0, r0, bottomIntersectR0P1);
+		
+		if(bottomR_1P0Q0 && bottomP0Q0R0){
+			double tLeft = segmentSection(aboveIntersectP0Q0, bottomIntersectP0Q0, aboveIntersectR_1P0, bottomIntersectR_1P0);
+			double tRight = segmentSection(aboveIntersectP0Q0, bottomIntersectP0Q0, aboveIntersectQ0R0, bottomIntersectQ0R0);
+			if(tLeft < tRight){
+				return replace(0); 
+			}else{
+				return replace(1); 
+			}
+		}else if(bottomP0Q0R0 && bottomQ0R0P1){
+			double tLeft = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectQ0R0, bottomIntersectQ0R0);
+			double tRight = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectR_1P0, bottomIntersectR_1P0);
+			if(tLeft < tRight){
+				return replace(1); 
+			}else{
+				return replace(2); 
+			}
+		}else if(bottomR_1P0Q0 && bottomQ0R0P1){
+			double tLeft = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectP0Q0, bottomIntersectP0Q0);
+			double tRight = segmentSection(aboveIntersectQ0R0, bottomIntersectQ0R0, aboveIntersectR0P1, bottomIntersectR0P1);
+			if(tLeft < tRight){
+				return replace(0); 
+			}else{
+				return replace(2); 
+			}
+		}else{
+			if(bottomR_1P0Q0){
+				return replace(0);
+			}else if(bottomP0Q0R0){
+				return replace(1);
+			}else if(bottomQ0R0P1){
+				return replace(2);
+			}
 		}
+		return null;
+	}
 
-		if(isIntersectAboveTriangle(aboveIntersectR_1P0, p0, aboveIntersectP0Q0)||
-		   isIntersectBottomTriangle(bottomIntersectR_1P0, p0, bottomIntersectP0Q0)){
-			replaced.add(replace(0));
-		}
-
-		return replaced;
+	public double segmentSection(Complex a, Complex b, Complex c, Complex d){
+		double a11 = b.re() - a.re();
+		double a12 = c.re() - d.re();
+		double b1 = c.re() - a.re();
+		double a21 = b.im() - a.im();
+		double a22 = c.im() - d.im();
+		double b2 = c.im() - a.im();
+		return (b1*a22-b2*a12)/(a11*a22-a21*a12);
 	}
 
 	public void drawTriangle(Graphics2D g2, double magnification, Complex p1, Complex p2, Complex p3){
